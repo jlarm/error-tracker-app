@@ -2,8 +2,8 @@
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { dashboard } from '@/routes';
 import { relativeTime, ageBetween } from '@/lib/relativeTime';
+import { dashboard } from '@/routes';
 
 type ErrorRow = {
     id: number;
@@ -57,11 +57,13 @@ const now = new Date().toISOString();
 
 const shortClass = (full: string): string => {
     const segments = full.split('\\');
+
     return segments[segments.length - 1] ?? full;
 };
 
 const shortFile = (file: string): string => {
     const segments = file.split('/');
+
     return segments.slice(-2).join('/');
 };
 
@@ -69,10 +71,9 @@ const formatCount = (n: number): string => {
     if (n >= 1000) {
         return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
     }
+
     return String(n);
 };
-
-const stripHtml = (label: string) => label.replace(/&laquo;|&raquo;/g, '').trim();
 
 const apiKeyCopied = ref(false);
 
@@ -90,6 +91,7 @@ const copyApiKey = async () => {
             document.execCommand('copy');
             textarea.remove();
         }
+
         apiKeyCopied.value = true;
         toast.success('API key copied');
         setTimeout(() => (apiKeyCopied.value = false), 1500);
@@ -103,6 +105,7 @@ const range = computed(() => {
     if (!props.errors.from || !props.errors.to) {
         return '0 of 0';
     }
+
     return `${props.errors.from}-${props.errors.to} of ${props.errors.total}`;
 });
 </script>
@@ -351,8 +354,9 @@ const range = computed(() => {
                         :href="link.url"
                         class="rounded-md border border-sidebar-border/70 px-3 py-1 text-xs transition hover:bg-muted dark:border-sidebar-border"
                         :class="{ 'bg-muted font-semibold': link.active }"
-                        v-html="link.label"
-                    />
+                    >
+                        <span v-html="link.label" />
+                    </Link>
                     <span
                         v-else
                         class="rounded-md border border-sidebar-border/70 px-3 py-1 text-xs text-muted-foreground dark:border-sidebar-border"

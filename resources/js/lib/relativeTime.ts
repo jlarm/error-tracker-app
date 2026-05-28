@@ -10,11 +10,13 @@ const DIVISIONS: Array<{ amount: number; unit: string }> = [
 
 export function relativeTime(iso: string): string {
     const then = new Date(iso).getTime();
+
     if (Number.isNaN(then)) {
         return '';
     }
 
     let duration = (Date.now() - then) / 1000;
+
     if (duration < 5) {
         return 'just now';
     }
@@ -23,6 +25,7 @@ export function relativeTime(iso: string): string {
         if (Math.abs(duration) < division.amount) {
             return `${Math.floor(Math.abs(duration))}${division.unit} ago`;
         }
+
         duration /= division.amount;
     }
 
@@ -32,6 +35,7 @@ export function relativeTime(iso: string): string {
 export function ageBetween(startIso: string, endIso: string): string {
     const start = new Date(startIso).getTime();
     const end = new Date(endIso).getTime();
+
     if (Number.isNaN(start) || Number.isNaN(end)) {
         return '';
     }
@@ -44,6 +48,7 @@ export function ageBetween(startIso: string, endIso: string): string {
             result = `${Math.floor(Math.abs(duration))}${division.unit}`;
             break;
         }
+
         duration /= division.amount;
     }
 

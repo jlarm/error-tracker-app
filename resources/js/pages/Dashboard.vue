@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { dashboard } from '@/routes';
 import { ageBetween, relativeTime } from '@/lib/relativeTime';
+import { dashboard } from '@/routes';
 
 type RecentError = {
     id: number;
@@ -37,11 +37,13 @@ const now = new Date().toISOString();
 
 const shortClass = (full: string): string => {
     const segments = full.split('\\');
+
     return segments[segments.length - 1] ?? full;
 };
 
 const shortFile = (file: string): string => {
     const segments = file.split('/');
+
     return segments.slice(-2).join('/');
 };
 
@@ -49,6 +51,7 @@ const formatCount = (n: number): string => {
     if (n >= 1000) {
         return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
     }
+
     return String(n);
 };
 </script>

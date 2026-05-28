@@ -2,8 +2,8 @@
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { dashboard } from '@/routes';
 import { relativeTime } from '@/lib/relativeTime';
+import { dashboard } from '@/routes';
 
 type StackFrame = {
     file?: string;
@@ -57,22 +57,27 @@ defineOptions({
 
 const shortClass = (full: string): string => {
     const segments = full.split('\\');
+
     return segments[segments.length - 1] ?? full;
 };
 
 const namespace = (full: string): string => {
     const segments = full.split('\\');
+
     if (segments.length <= 1) {
         return '';
     }
+
     return segments.slice(0, -1).join('\\');
 };
 
 const stackFrames = computed<StackFrame[]>(() => {
     const trace = props.errorLog.stack_trace;
+
     if (Array.isArray(trace)) {
         return trace as StackFrame[];
     }
+
     return [];
 });
 
@@ -86,49 +91,61 @@ const breadcrumbs = computed<Breadcrumb[]>(() =>
 
 const requestBody = computed(() => {
     const payload = props.errorLog.request_payload;
+
     if (!payload) {
         return null;
     }
-    const {
-        method: _m,
-        headers: _h,
-        ...body
-    } = payload as Record<string, unknown>;
+
+    const body = Object.fromEntries(
+        Object.entries(payload as Record<string, unknown>).filter(
+            ([key]) => key !== 'method' && key !== 'headers',
+        ),
+    );
+
     return Object.keys(body).length ? body : null;
 });
 
 const requestHeaders = computed<Record<string, string> | null>(() => {
     const payload = props.errorLog.request_payload;
+
     if (payload && typeof payload === 'object' && 'headers' in payload) {
         const h = payload.headers;
+
         if (h && typeof h === 'object') {
             return h as Record<string, string>;
         }
     }
+
     return null;
 });
 
 const requestMethod = computed(() => {
     const payload = props.errorLog.request_payload;
+
     if (payload && typeof payload === 'object' && 'method' in payload) {
         return String(payload.method);
     }
+
     return null;
 });
 
 const tagEntries = computed(() => {
     const t = props.errorLog.tags;
+
     if (!t || typeof t !== 'object') {
         return [];
     }
+
     return Object.entries(t).filter(([, v]) => v !== null && v !== undefined);
 });
 
 const contextBlocks = computed(() => {
     const c = props.errorLog.context;
+
     if (!c || typeof c !== 'object') {
         return [];
     }
+
     return Object.entries(c)
         .filter(([, v]) => v && typeof v === 'object')
         .map(([name, values]) => ({
@@ -160,6 +177,7 @@ const formatCount = (n: number): string => {
     if (n >= 1000) {
         return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}K`;
     }
+
     return String(n);
 };
 
@@ -167,9 +185,11 @@ const formatValue = (value: unknown): string => {
     if (value === null || value === undefined) {
         return '—';
     }
+
     if (typeof value === 'object') {
         return JSON.stringify(value);
     }
+
     return String(value);
 };
 
@@ -191,9 +211,11 @@ const levelClasses = (level: string | null | undefined): string => {
 
 const formatPath = (path: string): string => {
     const segments = path.split('/');
+
     if (segments.length <= 3) {
         return path;
     }
+
     return '…/' + segments.slice(-2).join('/');
 };
 
@@ -201,9 +223,11 @@ const flattenValue = (value: unknown): string => {
     if (value === null || value === undefined) {
         return '';
     }
+
     if (typeof value === 'object') {
         return JSON.stringify(value);
     }
+
     return String(value);
 };
 
@@ -215,9 +239,19 @@ const buildMarkdown = (): string => {
     lines.push('');
     lines.push(`**Issue ID:** ERR-${e.id}`);
     lines.push(`**Project:** ${e.project.name}`);
-    if (e.environment) lines.push(`**Environment:** ${e.environment}`);
-    if (e.level) lines.push(`**Level:** ${e.level}`);
-    if (e.release) lines.push(`**Release:** ${e.release}`);
+
+    if (e.environment) {
+lines.push(`**Environment:** ${e.environment}`);
+}
+
+    if (e.level) {
+lines.push(`**Level:** ${e.level}`);
+}
+
+    if (e.release) {
+lines.push(`**Release:** ${e.release}`);
+}
+
     lines.push(`**Occurrences:** ${e.occurrences}`);
     lines.push(`**First seen:** ${e.created_at}`);
     lines.push(`**Last seen:** ${e.last_seen_at}`);
@@ -229,7 +263,11 @@ const buildMarkdown = (): string => {
     lines.push(`**Class:** \`${e.exception_class}\``);
     lines.push(`**Message:** ${e.message}`);
     lines.push(`**Location:** \`${e.file}:${e.line}\``);
-    if (e.url) lines.push(`**URL:** ${e.url}`);
+
+    if (e.url) {
+lines.push(`**URL:** ${e.url}`);
+}
+
     lines.push('');
 
     const tagEntries = e.tags
@@ -237,12 +275,15 @@ const buildMarkdown = (): string => {
               ([, v]) => v !== null && v !== undefined,
           )
         : [];
+
     if (tagEntries.length) {
         lines.push('## Tags');
         lines.push('');
+
         for (const [key, value] of tagEntries) {
             lines.push(`- **${key}:** ${flattenValue(value)}`);
         }
+
         lines.push('');
     }
 
@@ -250,17 +291,21 @@ const buildMarkdown = (): string => {
         const blocks = Object.entries(e.context).filter(
             ([, v]) => v && typeof v === 'object',
         );
+
         if (blocks.length) {
             lines.push('## Contexts');
             lines.push('');
+
             for (const [name, values] of blocks) {
                 lines.push(`### ${name}`);
                 lines.push('');
+
                 for (const [key, value] of Object.entries(
                     values as Record<string, unknown>,
                 )) {
                     lines.push(`- **${name}.${key}:** ${flattenValue(value)}`);
                 }
+
                 lines.push('');
             }
         }
@@ -269,6 +314,7 @@ const buildMarkdown = (): string => {
     if (Array.isArray(e.breadcrumbs) && e.breadcrumbs.length) {
         lines.push('## Breadcrumbs');
         lines.push('');
+
         for (const crumb of e.breadcrumbs) {
             const timestamp = crumb.timestamp ?? '';
             const category = crumb.category ?? 'event';
@@ -276,12 +322,14 @@ const buildMarkdown = (): string => {
             lines.push(
                 `- \`${timestamp}\` **[${level}]** \`${category}\` — ${crumb.message ?? ''}`,
             );
+
             if (crumb.data && Object.keys(crumb.data).length) {
                 for (const [key, value] of Object.entries(crumb.data)) {
                     lines.push(`  - ${key}: ${flattenValue(value)}`);
                 }
             }
         }
+
         lines.push('');
     }
 
@@ -303,18 +351,23 @@ const buildMarkdown = (): string => {
     if (requestMethod.value || requestHeaders.value || requestBody.value) {
         lines.push('## HTTP Request');
         lines.push('');
+
         if (requestMethod.value || e.url) {
             lines.push(`**${requestMethod.value ?? 'GET'}** ${e.url ?? ''}`);
             lines.push('');
         }
+
         if (requestHeaders.value) {
             lines.push('### Headers');
             lines.push('');
+
             for (const [name, value] of Object.entries(requestHeaders.value)) {
                 lines.push(`- **${name}:** ${flattenValue(value)}`);
             }
+
             lines.push('');
         }
+
         if (requestBody.value) {
             lines.push('### Body');
             lines.push('');
@@ -337,6 +390,7 @@ const copied = ref(false);
 
 const copyAsMarkdown = async () => {
     const markdown = buildMarkdown();
+
     try {
         if (navigator.clipboard?.writeText) {
             await navigator.clipboard.writeText(markdown);
@@ -350,6 +404,7 @@ const copyAsMarkdown = async () => {
             document.execCommand('copy');
             textarea.remove();
         }
+
         copied.value = true;
         toast.success('Copied as Markdown');
         setTimeout(() => (copied.value = false), 2000);

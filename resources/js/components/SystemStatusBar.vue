@@ -12,7 +12,9 @@ onMounted(() => {
     }, 1000);
 });
 onBeforeUnmount(() => {
-    if (timerId) clearInterval(timerId);
+    if (timerId) {
+clearInterval(timerId);
+}
 });
 
 const time = computed(() =>

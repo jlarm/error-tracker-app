@@ -49,15 +49,19 @@ const projects = computed<ProjectOption[]>(
 
 const currentProjectId = computed<number | null>(() => {
     const projectMatch = page.url.match(/^\/projects\/(\d+)/);
+
     if (projectMatch) {
         return Number(projectMatch[1]);
     }
+
     const errorLog = page.props.errorLog as
         | { project?: { id: number } }
         | undefined;
+
     if (errorLog?.project?.id) {
         return errorLog.project.id;
     }
+
     return null;
 });
 
@@ -65,15 +69,18 @@ const activeProject = computed<ProjectOption | null>(() => {
     if (!currentProjectId.value) {
         return null;
     }
+
     return projects.value.find((p) => p.id === currentProjectId.value) ?? null;
 });
 
 const filter = ref('');
 const filteredProjects = computed(() => {
     const q = filter.value.trim().toLowerCase();
+
     if (!q) {
         return projects.value;
     }
+
     return projects.value.filter((p) => p.name.toLowerCase().includes(q));
 });
 

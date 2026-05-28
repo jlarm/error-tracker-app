@@ -30,6 +30,7 @@ const copy = async () => {
             document.execCommand('copy');
             textarea.remove();
         }
+
         copied.value = true;
         toast.success('Copied');
         setTimeout(() => (copied.value = false), 1500);
