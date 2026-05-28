@@ -1,0 +1,287 @@
+@import 'tailwindcss';
+
+@import 'tw-animate-css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────────────────────────
+   PHOSPHOR CONSOLE — A modern CRT terminal aesthetic
+   ───────────────────────────────────────────────────────────────── */
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 100 800;
+    font-display: swap;
+    src: url('https://fonts.bunny.net/jetbrains-mono/files/jetbrains-mono-latin-variable-wghtOnly-normal.woff2') format('woff2-variations');
+}
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: italic;
+    font-weight: 100 800;
+    font-display: swap;
+    src: url('https://fonts.bunny.net/jetbrains-mono/files/jetbrains-mono-latin-variable-wghtOnly-italic.woff2') format('woff2-variations');
+}
+
+@theme inline {
+    --font-sans:
+        'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo,
+        Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --font-mono:
+        'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo,
+        monospace;
+
+    --radius-2xl: var(--radius);
+    --radius-xl: var(--radius);
+    --radius-lg: var(--radius);
+    --radius-md: var(--radius);
+    --radius-sm: var(--radius);
+
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+
+    --color-sidebar: var(--sidebar-background);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    --color-phosphor: var(--phosphor);
+    --color-cyan-glow: var(--cyan-glow);
+    --color-amber-glow: var(--amber-glow);
+    --color-crimson-glow: var(--crimson-glow);
+}
+
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-border, currentColor);
+    }
+}
+
+@layer utilities {
+    body,
+    html {
+        --font-sans:
+            'JetBrains Mono', ui-monospace, 'SF Mono', SFMono-Regular, Menlo,
+            monospace;
+        font-feature-settings:
+            'ss01' on,
+            'ss02' on,
+            'calt' on,
+            'liga' off;
+    }
+}
+
+:root {
+    /* Daylight terminal — pale phosphor on bone */
+    --background: oklch(0.985 0.005 150);
+    --foreground: oklch(0.18 0.02 160);
+    --card: oklch(0.995 0.003 150);
+    --card-foreground: oklch(0.18 0.02 160);
+    --popover: oklch(0.995 0.003 150);
+    --popover-foreground: oklch(0.18 0.02 160);
+
+    --primary: oklch(0.45 0.16 150);
+    --primary-foreground: oklch(0.985 0.005 150);
+
+    --secondary: oklch(0.94 0.01 150);
+    --secondary-foreground: oklch(0.25 0.04 160);
+
+    --muted: oklch(0.945 0.008 150);
+    --muted-foreground: oklch(0.50 0.03 160);
+
+    --accent: oklch(0.92 0.05 150);
+    --accent-foreground: oklch(0.25 0.04 160);
+
+    --destructive: oklch(0.58 0.22 25);
+    --destructive-foreground: oklch(0.985 0 0);
+
+    --border: oklch(0.90 0.01 150);
+    --input: oklch(0.94 0.01 150);
+    --ring: oklch(0.55 0.18 150);
+
+    --chart-1: oklch(0.65 0.18 150);
+    --chart-2: oklch(0.70 0.15 200);
+    --chart-3: oklch(0.75 0.16 75);
+    --chart-4: oklch(0.58 0.22 25);
+    --chart-5: oklch(0.55 0.14 260);
+
+    --radius: 2px;
+
+    --sidebar: oklch(0.97 0.008 150);
+    --sidebar-background: oklch(0.97 0.008 150);
+    --sidebar-foreground: oklch(0.22 0.02 160);
+    --sidebar-primary: oklch(0.45 0.16 150);
+    --sidebar-primary-foreground: oklch(0.985 0.005 150);
+    --sidebar-accent: oklch(0.93 0.02 150);
+    --sidebar-accent-foreground: oklch(0.22 0.02 160);
+    --sidebar-border: oklch(0.88 0.01 150);
+    --sidebar-ring: oklch(0.55 0.18 150);
+
+    --phosphor: oklch(0.55 0.18 150);
+    --cyan-glow: oklch(0.55 0.14 210);
+    --amber-glow: oklch(0.62 0.16 75);
+    --crimson-glow: oklch(0.58 0.22 25);
+
+    --grid-line: oklch(0.18 0.02 160 / 0.04);
+}
+
+.dark {
+    /* Phosphor console — the canonical look */
+    --background: oklch(0.135 0.015 160);
+    --foreground: oklch(0.95 0.01 150);
+    --card: oklch(0.165 0.018 160);
+    --card-foreground: oklch(0.95 0.01 150);
+    --popover: oklch(0.165 0.018 160);
+    --popover-foreground: oklch(0.95 0.01 150);
+
+    --primary: oklch(0.85 0.20 145);
+    --primary-foreground: oklch(0.135 0.015 160);
+
+    --secondary: oklch(0.22 0.02 160);
+    --secondary-foreground: oklch(0.92 0.02 150);
+
+    --muted: oklch(0.20 0.018 160);
+    --muted-foreground: oklch(0.62 0.04 155);
+
+    --accent: oklch(0.24 0.03 160);
+    --accent-foreground: oklch(0.88 0.06 145);
+
+    --destructive: oklch(0.68 0.24 25);
+    --destructive-foreground: oklch(0.135 0 0);
+
+    --border: oklch(0.26 0.02 160);
+    --input: oklch(0.20 0.018 160);
+    --ring: oklch(0.85 0.20 145);
+
+    --chart-1: oklch(0.85 0.20 145);
+    --chart-2: oklch(0.78 0.16 210);
+    --chart-3: oklch(0.80 0.16 75);
+    --chart-4: oklch(0.68 0.24 25);
+    --chart-5: oklch(0.62 0.14 280);
+
+    --sidebar: oklch(0.115 0.015 160);
+    --sidebar-background: oklch(0.115 0.015 160);
+    --sidebar-foreground: oklch(0.90 0.015 150);
+    --sidebar-primary: oklch(0.85 0.20 145);
+    --sidebar-primary-foreground: oklch(0.135 0.015 160);
+    --sidebar-accent: oklch(0.22 0.025 155);
+    --sidebar-accent-foreground: oklch(0.92 0.04 145);
+    --sidebar-border: oklch(0.22 0.02 160);
+    --sidebar-ring: oklch(0.85 0.20 145);
+
+    --phosphor: oklch(0.85 0.20 145);
+    --cyan-glow: oklch(0.78 0.16 210);
+    --amber-glow: oklch(0.80 0.16 75);
+    --crimson-glow: oklch(0.68 0.24 25);
+
+    --grid-line: oklch(0.95 0.01 150 / 0.025);
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/40;
+    }
+    html {
+        font-feature-settings:
+            'ss01' on,
+            'ss02' on,
+            'calt' on;
+    }
+    body {
+        @apply bg-background text-foreground;
+        background-image:
+            linear-gradient(var(--grid-line) 1px, transparent 1px),
+            linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+        background-size: 32px 32px;
+        background-position: -1px -1px;
+    }
+    h1, h2, h3, h4, h5, h6 {
+        letter-spacing: -0.01em;
+    }
+    .tabular-nums {
+        font-variant-numeric: tabular-nums;
+    }
+}
+
+@layer utilities {
+    .text-phosphor {
+        color: var(--phosphor);
+        text-shadow: 0 0 12px color-mix(in oklch, var(--phosphor) 30%, transparent);
+    }
+    .ring-phosphor {
+        box-shadow:
+            0 0 0 1px var(--phosphor),
+            0 0 24px color-mix(in oklch, var(--phosphor) 20%, transparent);
+    }
+
+    .label-bracket::before { content: '['; opacity: 0.5; margin-right: 0.4ch; }
+    .label-bracket::after  { content: ']'; opacity: 0.5; margin-left: 0.4ch; }
+
+    @keyframes phosphor-blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+    }
+    .cursor-blink::after {
+        content: '▌';
+        margin-left: 0.25ch;
+        color: var(--phosphor);
+        animation: phosphor-blink 1.05s steps(1, end) infinite;
+    }
+
+    @keyframes boot-in {
+        0%   { opacity: 0; transform: translateY(4px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    .boot-in > * {
+        opacity: 0;
+        animation: boot-in 0.45s ease-out forwards;
+    }
+    .boot-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .boot-in > *:nth-child(2) { animation-delay: 0.12s; }
+    .boot-in > *:nth-child(3) { animation-delay: 0.19s; }
+    .boot-in > *:nth-child(4) { animation-delay: 0.26s; }
+    .boot-in > *:nth-child(5) { animation-delay: 0.33s; }
+    .boot-in > *:nth-child(6) { animation-delay: 0.40s; }
+}
