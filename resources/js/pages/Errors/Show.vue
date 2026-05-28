@@ -51,9 +51,7 @@ const props = defineProps<{
 
 defineOptions({
     layout: {
-        breadcrumbs: [
-            { title: 'Dashboard', href: dashboard() },
-        ],
+        breadcrumbs: [{ title: 'Dashboard', href: dashboard() }],
     },
 });
 
@@ -91,7 +89,11 @@ const requestBody = computed(() => {
     if (!payload) {
         return null;
     }
-    const { method: _m, headers: _h, ...body } = payload as Record<string, unknown>;
+    const {
+        method: _m,
+        headers: _h,
+        ...body
+    } = payload as Record<string, unknown>;
     return Object.keys(body).length ? body : null;
 });
 
@@ -231,7 +233,9 @@ const buildMarkdown = (): string => {
     lines.push('');
 
     const tagEntries = e.tags
-        ? Object.entries(e.tags).filter(([, v]) => v !== null && v !== undefined)
+        ? Object.entries(e.tags).filter(
+              ([, v]) => v !== null && v !== undefined,
+          )
         : [];
     if (tagEntries.length) {
         lines.push('## Tags');
@@ -269,7 +273,9 @@ const buildMarkdown = (): string => {
             const timestamp = crumb.timestamp ?? '';
             const category = crumb.category ?? 'event';
             const level = crumb.level ?? 'info';
-            lines.push(`- \`${timestamp}\` **[${level}]** \`${category}\` — ${crumb.message ?? ''}`);
+            lines.push(
+                `- \`${timestamp}\` **[${level}]** \`${category}\` — ${crumb.message ?? ''}`,
+            );
             if (crumb.data && Object.keys(crumb.data).length) {
                 for (const [key, value] of Object.entries(crumb.data)) {
                     lines.push(`  - ${key}: ${flattenValue(value)}`);
@@ -284,7 +290,7 @@ const buildMarkdown = (): string => {
         lines.push('');
         lines.push('```');
         stackFrames.value.forEach((frame, index) => {
-            const location = `${frame.file ?? '<internal>'}:${frame.line ?? '?'}`;
+            const location = `${frame.file ?? '[internal]'}:${frame.line ?? '?'}`;
             const fn = frame.class
                 ? `${frame.class}${frame.type ?? '::'}${frame.function ?? ''}`
                 : (frame.function ?? '');
@@ -319,7 +325,12 @@ const buildMarkdown = (): string => {
         }
     }
 
-    return lines.join('\n').replace(/\n{3,}/g, '\n\n').trimEnd() + '\n';
+    return (
+        lines
+            .join('\n')
+            .replace(/\n{3,}/g, '\n\n')
+            .trimEnd() + '\n'
+    );
 };
 
 const copied = ref(false);
@@ -370,12 +381,12 @@ const toggleResolved = () => {
             <div class="min-w-0 flex-1">
                 <Link
                     :href="`/projects/${errorLog.project.id}`"
-                    class="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground hover:text-phosphor"
+                    class="inline-flex items-center gap-1 font-mono text-[10px] tracking-[0.22em] text-muted-foreground uppercase hover:text-phosphor"
                 >
                     &lt;-- {{ errorLog.project.name }}
                 </Link>
                 <h1
-                    class="mt-2 font-mono text-2xl font-semibold uppercase tracking-wider text-foreground"
+                    class="mt-2 font-mono text-2xl font-semibold tracking-wider text-foreground uppercase"
                 >
                     {{ shortClass(errorLog.exception_class) }}
                 </h1>
@@ -391,7 +402,7 @@ const toggleResolved = () => {
                 </p>
                 <div class="mt-3 flex flex-wrap items-center gap-2 font-mono">
                     <span
-                        class="inline-flex items-center gap-2 border px-2 py-1 text-[10px] font-medium uppercase tracking-[0.22em]"
+                        class="inline-flex items-center gap-2 border px-2 py-1 text-[10px] font-medium tracking-[0.22em] uppercase"
                         :class="
                             isResolved
                                 ? 'border-phosphor/40 bg-phosphor/10 text-phosphor shadow-[0_0_12px_color-mix(in_oklch,var(--phosphor)_20%,transparent)]'
@@ -400,31 +411,33 @@ const toggleResolved = () => {
                     >
                         <span
                             class="size-1.5"
-                            :class="isResolved ? 'bg-phosphor' : 'bg-crimson-glow'"
+                            :class="
+                                isResolved ? 'bg-phosphor' : 'bg-crimson-glow'
+                            "
                         />
                         {{ isResolved ? 'RESOLVED' : 'UNRESOLVED' }}
                     </span>
                     <span
-                        class="inline-flex items-center gap-2 border border-sidebar-border bg-muted/40 px-2 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground"
+                        class="inline-flex items-center gap-2 border border-sidebar-border bg-muted/40 px-2 py-1 text-[10px] font-medium tracking-[0.22em] text-muted-foreground uppercase"
                     >
                         ERR-{{ errorLog.id }}
                     </span>
                     <span
                         v-if="errorLog.level"
-                        class="border px-2 py-1 text-[10px] font-medium uppercase tracking-[0.22em]"
+                        class="border px-2 py-1 text-[10px] font-medium tracking-[0.22em] uppercase"
                         :class="levelClasses(errorLog.level)"
                     >
                         {{ errorLog.level }}
                     </span>
                     <span
                         v-if="errorLog.environment"
-                        class="border border-sidebar-border bg-muted/40 px-2 py-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+                        class="border border-sidebar-border bg-muted/40 px-2 py-1 text-[10px] tracking-[0.22em] text-muted-foreground uppercase"
                     >
                         env:{{ errorLog.environment }}
                     </span>
                     <span
                         v-if="errorLog.release"
-                        class="border border-sidebar-border bg-muted/40 px-2 py-1 text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+                        class="border border-sidebar-border bg-muted/40 px-2 py-1 text-[10px] tracking-[0.22em] text-muted-foreground uppercase"
                     >
                         rel:{{ errorLog.release }}
                     </span>
@@ -433,12 +446,12 @@ const toggleResolved = () => {
             <div class="flex flex-col items-end gap-3 text-right">
                 <div>
                     <div
-                        class="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+                        class="font-mono text-[10px] tracking-[0.22em] text-muted-foreground uppercase"
                     >
                         <span class="label-bracket">EVENTS</span>
                     </div>
                     <div
-                        class="mt-1 font-mono text-3xl font-semibold tabular-nums text-phosphor"
+                        class="mt-1 font-mono text-3xl font-semibold text-phosphor tabular-nums"
                     >
                         {{ formatCount(errorLog.occurrences) }}
                     </div>
@@ -446,7 +459,7 @@ const toggleResolved = () => {
                 <button
                     type="button"
                     @click="toggleResolved"
-                    class="inline-flex items-center gap-1.5 border px-2.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.22em] transition"
+                    class="inline-flex items-center gap-1.5 border px-2.5 py-1.5 font-mono text-[10px] font-medium tracking-[0.22em] uppercase transition"
                     :class="
                         isResolved
                             ? 'border-muted-foreground/40 bg-muted/30 text-muted-foreground hover:border-crimson-glow/40 hover:bg-crimson-glow/10 hover:text-crimson-glow'
@@ -487,8 +500,12 @@ const toggleResolved = () => {
                 <button
                     type="button"
                     @click="copyAsMarkdown"
-                    class="inline-flex items-center gap-1.5 border border-phosphor/40 bg-phosphor/5 px-2.5 py-1.5 font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-phosphor transition hover:bg-phosphor/15 hover:shadow-[0_0_12px_color-mix(in_oklch,var(--phosphor)_25%,transparent)]"
-                    :title="copied ? 'Copied!' : 'Copy a markdown summary you can paste into an AI chat'"
+                    class="inline-flex items-center gap-1.5 border border-phosphor/40 bg-phosphor/5 px-2.5 py-1.5 font-mono text-[10px] font-medium tracking-[0.22em] text-phosphor uppercase transition hover:bg-phosphor/15 hover:shadow-[0_0_12px_color-mix(in_oklch,var(--phosphor)_25%,transparent)]"
+                    :title="
+                        copied
+                            ? 'Copied!'
+                            : 'Copy a markdown summary you can paste into an AI chat'
+                    "
                 >
                     <svg
                         v-if="copied"
@@ -524,36 +541,40 @@ const toggleResolved = () => {
 
         <div class="grid gap-6 lg:grid-cols-3">
             <div class="space-y-6 lg:col-span-2">
-                <section
-                    class="border border-sidebar-border bg-card/50"
-                >
+                <section class="border border-sidebar-border bg-card/50">
                     <header
-                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-phosphor"
+                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] tracking-[0.22em] text-phosphor uppercase"
                     >
                         <span class="label-bracket">HIGHLIGHTS</span>
                     </header>
                     <dl class="grid gap-x-6 gap-y-2 p-4 text-sm sm:grid-cols-2">
                         <div class="flex items-baseline gap-3">
-                            <dt class="w-24 shrink-0 text-xs uppercase tracking-wide text-muted-foreground">
+                            <dt
+                                class="w-24 shrink-0 text-xs tracking-wide text-muted-foreground uppercase"
+                            >
                                 Exception
                             </dt>
-                            <dd class="min-w-0 break-all font-mono text-xs">
+                            <dd class="min-w-0 font-mono text-xs break-all">
                                 {{ errorLog.exception_class }}
                             </dd>
                         </div>
                         <div class="flex items-baseline gap-3">
-                            <dt class="w-24 shrink-0 text-xs uppercase tracking-wide text-muted-foreground">
+                            <dt
+                                class="w-24 shrink-0 text-xs tracking-wide text-muted-foreground uppercase"
+                            >
                                 Location
                             </dt>
-                            <dd class="min-w-0 break-all font-mono text-xs">
+                            <dd class="min-w-0 font-mono text-xs break-all">
                                 {{ errorLog.file }}:{{ errorLog.line }}
                             </dd>
                         </div>
                         <div class="flex items-baseline gap-3 sm:col-span-2">
-                            <dt class="w-24 shrink-0 text-xs uppercase tracking-wide text-muted-foreground">
+                            <dt
+                                class="w-24 shrink-0 text-xs tracking-wide text-muted-foreground uppercase"
+                            >
                                 URL
                             </dt>
-                            <dd class="min-w-0 break-all text-xs">
+                            <dd class="min-w-0 text-xs break-all">
                                 <a
                                     v-if="errorLog.url"
                                     :href="errorLog.url"
@@ -563,19 +584,25 @@ const toggleResolved = () => {
                                 >
                                     {{ errorLog.url }}
                                 </a>
-                                <span v-else class="text-muted-foreground">—</span>
+                                <span v-else class="text-muted-foreground"
+                                    >—</span
+                                >
                             </dd>
                         </div>
                         <div class="flex items-baseline gap-3">
-                            <dt class="w-24 shrink-0 text-xs uppercase tracking-wide text-muted-foreground">
+                            <dt
+                                class="w-24 shrink-0 text-xs tracking-wide text-muted-foreground uppercase"
+                            >
                                 Fingerprint
                             </dt>
-                            <dd class="min-w-0 break-all font-mono text-xs">
+                            <dd class="min-w-0 font-mono text-xs break-all">
                                 {{ errorLog.fingerprint }}
                             </dd>
                         </div>
                         <div class="flex items-baseline gap-3">
-                            <dt class="w-24 shrink-0 text-xs uppercase tracking-wide text-muted-foreground">
+                            <dt
+                                class="w-24 shrink-0 text-xs tracking-wide text-muted-foreground uppercase"
+                            >
                                 Occurrences
                             </dt>
                             <dd class="min-w-0 text-xs tabular-nums">
@@ -585,17 +612,17 @@ const toggleResolved = () => {
                     </dl>
                 </section>
 
-                <section
-                    class="border border-sidebar-border bg-card/50"
-                >
+                <section class="border border-sidebar-border bg-card/50">
                     <header
                         class="flex items-center justify-between border-b border-sidebar-border bg-muted/40 px-4 py-2"
                     >
                         <h2
-                            class="font-mono text-[10px] uppercase tracking-[0.22em] text-phosphor"
+                            class="font-mono text-[10px] tracking-[0.22em] text-phosphor uppercase"
                         >
                             <span class="label-bracket">STACK_TRACE</span>
-                            <span class="ml-2 font-normal text-muted-foreground">
+                            <span
+                                class="ml-2 font-normal text-muted-foreground"
+                            >
                                 {{ stackFrames.length }} frames
                             </span>
                         </h2>
@@ -612,25 +639,33 @@ const toggleResolved = () => {
                         >
                             <div class="flex flex-wrap items-baseline gap-x-2">
                                 <span
-                                    class="font-mono text-[10px] tabular-nums text-muted-foreground"
+                                    class="font-mono text-[10px] text-muted-foreground tabular-nums"
                                 >
                                     #{{ index }}
                                 </span>
-                                <span class="break-all font-mono text-foreground">
-                                    {{ frame.file ?? '<internal>' }}<span
+                                <span
+                                    class="font-mono break-all text-foreground"
+                                >
+                                    {{ frame.file ?? '[internal]' }}
+                                    <span
                                         v-if="frame.line"
                                         class="text-muted-foreground"
-                                    >:{{ frame.line }}</span>
+                                    >
+                                        :{{ frame.line }}
+                                    </span>
                                 </span>
                             </div>
                             <div
                                 v-if="frame.class || frame.function"
-                                class="mt-1 break-all pl-7 font-mono text-[11px] text-muted-foreground"
+                                class="mt-1 pl-7 font-mono text-[11px] break-all text-muted-foreground"
                             >
                                 in
                                 <span class="text-foreground">
                                     <template v-if="frame.class">
-                                        {{ frame.class }}<span class="text-muted-foreground">{{ frame.type ?? '::' }}</span>
+                                        {{ frame.class
+                                        }}<span class="text-muted-foreground">{{
+                                            frame.type ?? '::'
+                                        }}</span>
                                     </template>
                                     <template v-if="frame.function">
                                         {{ frame.function }}()
@@ -668,15 +703,19 @@ const toggleResolved = () => {
                         class="flex items-center justify-between border-b border-sidebar-border bg-muted/40 px-4 py-2"
                     >
                         <h2
-                            class="font-mono text-[10px] uppercase tracking-[0.22em] text-phosphor"
+                            class="font-mono text-[10px] tracking-[0.22em] text-phosphor uppercase"
                         >
                             <span class="label-bracket">BREADCRUMBS</span>
-                            <span class="ml-2 font-normal text-muted-foreground">
+                            <span
+                                class="ml-2 font-normal text-muted-foreground"
+                            >
                                 {{ breadcrumbs.length }} events
                             </span>
                         </h2>
                     </header>
-                    <ol class="divide-y divide-sidebar-border/70 dark:divide-sidebar-border">
+                    <ol
+                        class="divide-y divide-sidebar-border/70 dark:divide-sidebar-border"
+                    >
                         <li
                             v-for="(crumb, index) in breadcrumbs"
                             :key="index"
@@ -690,7 +729,9 @@ const toggleResolved = () => {
                                 >
                                     {{ crumb.level }}
                                 </span>
-                                <span class="font-mono text-[11px] text-muted-foreground">
+                                <span
+                                    class="font-mono text-[11px] text-muted-foreground"
+                                >
                                     {{ crumb.category ?? 'event' }}
                                 </span>
                             </div>
@@ -699,11 +740,16 @@ const toggleResolved = () => {
                                     {{ crumb.message ?? '—' }}
                                 </div>
                                 <div
-                                    v-if="crumb.data && Object.keys(crumb.data).length"
+                                    v-if="
+                                        crumb.data &&
+                                        Object.keys(crumb.data).length
+                                    "
                                     class="mt-1 font-mono text-[10px] text-muted-foreground"
                                 >
                                     <span
-                                        v-for="[key, value] in Object.entries(crumb.data)"
+                                        v-for="[key, value] in Object.entries(
+                                            crumb.data,
+                                        )"
                                         :key="key"
                                         class="mr-3"
                                     >
@@ -713,7 +759,7 @@ const toggleResolved = () => {
                             </div>
                             <time
                                 v-if="crumb.timestamp"
-                                class="whitespace-nowrap font-mono text-[10px] text-muted-foreground"
+                                class="font-mono text-[10px] whitespace-nowrap text-muted-foreground"
                                 :title="crumb.timestamp"
                             >
                                 {{ formatTime(crumb.timestamp) }}
@@ -722,20 +768,18 @@ const toggleResolved = () => {
                     </ol>
                 </section>
 
-                <section
-                    class="border border-sidebar-border bg-card/50"
-                >
+                <section class="border border-sidebar-border bg-card/50">
                     <header
                         class="flex flex-wrap items-center gap-2 border-b border-sidebar-border bg-muted/40 px-4 py-2"
                     >
                         <h2
-                            class="font-mono text-[10px] uppercase tracking-[0.22em] text-phosphor"
+                            class="font-mono text-[10px] tracking-[0.22em] text-phosphor uppercase"
                         >
                             <span class="label-bracket">HTTP_REQUEST</span>
                         </h2>
                         <span
                             v-if="requestMethod"
-                            class="rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-emerald-600 dark:text-emerald-400"
+                            class="rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-600 uppercase dark:text-emerald-400"
                         >
                             {{ requestMethod }}
                         </span>
@@ -752,19 +796,23 @@ const toggleResolved = () => {
                         class="border-b border-sidebar-border/70 dark:border-sidebar-border"
                     >
                         <h3
-                            class="px-4 pt-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
+                            class="px-4 pt-3 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
                         >
                             Headers
                         </h3>
-                        <dl class="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 p-4 text-xs">
+                        <dl
+                            class="grid grid-cols-[max-content_1fr] gap-x-4 gap-y-1 p-4 text-xs"
+                        >
                             <template
-                                v-for="[name, value] in Object.entries(requestHeaders)"
+                                v-for="[name, value] in Object.entries(
+                                    requestHeaders,
+                                )"
                                 :key="name"
                             >
                                 <dt class="font-mono text-muted-foreground">
                                     {{ name }}
                                 </dt>
-                                <dd class="min-w-0 break-all font-mono">
+                                <dd class="min-w-0 font-mono break-all">
                                     {{ value }}
                                 </dd>
                             </template>
@@ -773,7 +821,7 @@ const toggleResolved = () => {
 
                     <template v-if="requestBody">
                         <h3
-                            class="px-4 pt-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground"
+                            class="px-4 pt-3 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase"
                         >
                             Body
                         </h3>
@@ -794,7 +842,7 @@ const toggleResolved = () => {
                     class="border border-sidebar-border bg-card/50"
                 >
                     <header
-                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-phosphor"
+                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] tracking-[0.22em] text-phosphor uppercase"
                     >
                         <span class="label-bracket">CONTEXTS</span>
                     </header>
@@ -809,7 +857,9 @@ const toggleResolved = () => {
                             >
                                 {{ block.name }}
                             </h3>
-                            <dl class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 p-3 text-xs">
+                            <dl
+                                class="grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1 p-3 text-xs"
+                            >
                                 <template
                                     v-for="[key, value] in block.entries"
                                     :key="key"
@@ -817,7 +867,7 @@ const toggleResolved = () => {
                                     <dt class="font-mono text-muted-foreground">
                                         {{ key }}
                                     </dt>
-                                    <dd class="min-w-0 break-all font-mono">
+                                    <dd class="min-w-0 font-mono break-all">
                                         {{ formatValue(value) }}
                                     </dd>
                                 </template>
@@ -828,17 +878,17 @@ const toggleResolved = () => {
             </div>
 
             <aside class="space-y-6">
-                <section
-                    class="border border-sidebar-border bg-card/50"
-                >
+                <section class="border border-sidebar-border bg-card/50">
                     <header
-                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-phosphor"
+                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] tracking-[0.22em] text-phosphor uppercase"
                     >
                         <span class="label-bracket">TIMELINE</span>
                     </header>
                     <dl class="space-y-3 p-4 text-xs">
                         <div>
-                            <dt class="font-medium uppercase tracking-wide text-muted-foreground">
+                            <dt
+                                class="font-medium tracking-wide text-muted-foreground uppercase"
+                            >
                                 Last seen
                             </dt>
                             <dd class="mt-0.5">
@@ -849,7 +899,9 @@ const toggleResolved = () => {
                             </dd>
                         </div>
                         <div>
-                            <dt class="font-medium uppercase tracking-wide text-muted-foreground">
+                            <dt
+                                class="font-medium tracking-wide text-muted-foreground uppercase"
+                            >
                                 First seen
                             </dt>
                             <dd class="mt-0.5">
@@ -867,21 +919,29 @@ const toggleResolved = () => {
                     class="border border-sidebar-border bg-card/50"
                 >
                     <header
-                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.22em] text-phosphor"
+                        class="border-b border-sidebar-border bg-muted/40 px-4 py-2 font-mono text-[10px] tracking-[0.22em] text-phosphor uppercase"
                     >
                         <span class="label-bracket">TAGS</span>
                     </header>
-                    <dl class="divide-y divide-sidebar-border/70 text-xs dark:divide-sidebar-border">
+                    <dl
+                        class="divide-y divide-sidebar-border/70 text-xs dark:divide-sidebar-border"
+                    >
                         <div
                             v-for="[key, value] in tagEntries"
                             :key="key"
                             class="flex items-baseline gap-3 px-4 py-2"
                         >
-                            <dt class="w-28 shrink-0 font-mono text-muted-foreground">
+                            <dt
+                                class="w-28 shrink-0 font-mono text-muted-foreground"
+                            >
                                 {{ key }}
                             </dt>
-                            <dd class="min-w-0 break-all font-mono">
-                                {{ key === 'transaction' ? formatPath(String(value)) : value }}
+                            <dd class="min-w-0 font-mono break-all">
+                                {{
+                                    key === 'transaction'
+                                        ? formatPath(String(value))
+                                        : value
+                                }}
                             </dd>
                         </div>
                     </dl>
