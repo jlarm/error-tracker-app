@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ageBetween, relativeTime } from '@/lib/relativeTime';
 import { dashboard } from '@/routes';
 
@@ -138,8 +138,9 @@ const formatCount = (n: number): string => {
                         <tr
                             v-for="(error, index) in recentErrors"
                             :key="error.id"
-                            class="group border-b border-sidebar-border/60 transition last:border-b-0 hover:bg-muted/40"
+                            class="group cursor-pointer border-b border-sidebar-border/60 transition last:border-b-0 hover:bg-muted/40"
                             :class="{ 'opacity-50': error.resolved_at }"
+                            @click="router.visit(`/errors/${error.id}`)"
                         >
                             <td
                                 class="px-3 py-3 align-top font-mono text-[10px] tabular-nums text-muted-foreground"
