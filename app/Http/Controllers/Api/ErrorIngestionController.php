@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ErrorLog;
+use App\Jobs\SendSlackErrorNotification;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -46,7 +46,12 @@ class ErrorIngestionController extends Controller
 
         $errorLog = $project->errorLogs()->where('fingerprint', $fingerprint)->first();
 
+        $isNewIssue = false;
+        $isRegression = false;
+
         if ($errorLog) {
+            $isRegression = $errorLog->resolved_at !== null;
+
             $errorLog->increment('occurrences');
             $errorLog->forceFill([
                 'last_seen_at' => now(),
@@ -81,6 +86,11 @@ class ErrorIngestionController extends Controller
                 'occurrences' => 1,
                 'last_seen_at' => now(),
             ]);
+            $isNewIssue = true;
+        }
+
+        if ($isNewIssue || $isRegression) {
+            SendSlackErrorNotification::dispatch($errorLog->id, $isRegression);
         }
 
         return response()->json([
