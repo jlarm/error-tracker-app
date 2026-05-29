@@ -61,10 +61,6 @@ const appName = computed(() =>
             >
                 DOCS
             </Link>
-            <span class="hidden md:inline">
-                <span class="text-muted-foreground">sys:</span>
-                <span class="ml-1 text-foreground">online</span>
-            </span>
             <span class="hidden sm:inline">{{ date }}</span>
             <span class="tabular-nums text-foreground cursor-blink">
                 {{ time }}
