@@ -18,10 +18,42 @@ test('dashboard lists recent errors across projects', function () {
         ->assertOk()
         ->assertInertia(
             fn ($page) => $page->component('Dashboard')
+                ->where('status', 'unresolved')
                 ->has('recentErrors', 1)
                 ->where('recentErrors.0.exception_class', 'RuntimeException')
-                ->where('recentErrors.0.project_name', 'Acme'),
+                ->where('recentErrors.0.project_name', 'Acme')
+                ->where('counts.unresolved', 1)
+                ->where('counts.resolved', 0)
+                ->where('counts.all', 1),
         );
+});
+
+test('dashboard filters by resolved status', function () {
+    $user = User::factory()->create();
+    $project = Project::factory()->create();
+    $open = ErrorLog::factory()->for($project)->create(['resolved_at' => null]);
+    $closed = ErrorLog::factory()->for($project)->create(['resolved_at' => now()]);
+
+    $this->actingAs($user)
+        ->get(route('dashboard', ['status' => 'resolved']))
+        ->assertOk()
+        ->assertInertia(
+            fn ($page) => $page->component('Dashboard')
+                ->where('status', 'resolved')
+                ->has('recentErrors', 1)
+                ->where('recentErrors.0.id', $closed->id),
+        );
+
+    $this->actingAs($user)
+        ->get(route('dashboard', ['status' => 'all']))
+        ->assertOk()
+        ->assertInertia(
+            fn ($page) => $page->component('Dashboard')
+                ->where('status', 'all')
+                ->has('recentErrors', 2),
+        );
+
+    expect($open)->not->toBeNull();
 });
 
 test('project page paginates errors sorted by last seen', function () {
@@ -52,7 +84,7 @@ test('authenticated user can create a project and gets an api key', function () 
     $response = $this->actingAs($user)
         ->post(route('projects.store'), ['name' => 'My New Site']);
 
-    $project = \App\Models\Project::firstWhere('name', 'My New Site');
+    $project = Project::firstWhere('name', 'My New Site');
 
     expect($project)->not->toBeNull()
         ->and($project->api_key)->toBeString()

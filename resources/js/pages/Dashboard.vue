@@ -18,9 +18,19 @@ type RecentError = {
     resolved_at: string | null;
 };
 
+type Status = 'unresolved' | 'resolved' | 'all';
+
 defineProps<{
     recentErrors: RecentError[];
+    status: Status;
+    counts: Record<Status, number>;
 }>();
+
+const filterTabs: Array<{ key: Status; label: string }> = [
+    { key: 'unresolved', label: 'UNRESOLVED' },
+    { key: 'resolved', label: 'RESOLVED' },
+    { key: 'all', label: 'ALL' },
+];
 
 defineOptions({
     layout: {
@@ -60,16 +70,51 @@ const formatCount = (n: number): string => {
     <Head title="Dashboard" />
 
     <div class="boot-in flex h-full flex-1 flex-col gap-6 p-6">
-        <section>
-            <div class="mb-4 flex items-baseline justify-between">
+        <section class="flex flex-col gap-4">
+            <div class="flex items-baseline justify-between">
                 <h2
                     class="font-mono text-xs uppercase tracking-[0.32em] text-phosphor"
                 >
                     <span class="label-bracket">RECENT_ISSUES</span>
                 </h2>
-                <span class="text-[10px] uppercase tracking-[0.22em] text-muted-foreground">
+                <span
+                    class="text-[10px] uppercase tracking-[0.22em] text-muted-foreground"
+                >
                     stream &middot; all projects
                 </span>
+            </div>
+
+            <div
+                class="flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em]"
+            >
+                <span class="text-muted-foreground">
+                    <span class="label-bracket">FILTER</span>
+                </span>
+                <Link
+                    v-for="tab in filterTabs"
+                    :key="tab.key"
+                    :href="`/dashboard?status=${tab.key}`"
+                    preserve-scroll
+                    class="inline-flex items-center gap-2 border px-2.5 py-1 transition"
+                    :class="
+                        status === tab.key
+                            ? 'border-phosphor/50 bg-phosphor/10 text-phosphor shadow-[0_0_12px_color-mix(in_oklch,var(--phosphor)_18%,transparent)]'
+                            : 'border-sidebar-border bg-muted/30 text-muted-foreground hover:border-phosphor/30 hover:text-foreground'
+                    "
+                >
+                    <span
+                        class="size-1.5"
+                        :class="{
+                            'bg-phosphor': tab.key === 'resolved',
+                            'bg-crimson-glow': tab.key === 'unresolved',
+                            'bg-muted-foreground': tab.key === 'all',
+                        }"
+                    />
+                    {{ tab.label }}
+                    <span class="tabular-nums text-muted-foreground/80">
+                        {{ counts[tab.key] }}
+                    </span>
+                </Link>
             </div>
 
             <div
@@ -180,7 +225,16 @@ const formatCount = (n: number): string => {
                                 colspan="5"
                                 class="px-4 py-12 text-center font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground"
                             >
-                                &gt; no errors reported. system nominal.
+                                &gt;
+                                <template v-if="status === 'unresolved'">
+                                    no open issues. system nominal.
+                                </template>
+                                <template v-else-if="status === 'resolved'">
+                                    no resolved issues yet.
+                                </template>
+                                <template v-else>
+                                    no errors reported. system nominal.
+                                </template>
                             </td>
                         </tr>
                     </tbody>
