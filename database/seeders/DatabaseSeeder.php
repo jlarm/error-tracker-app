@@ -14,6 +14,15 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        if (! app()->environment('local')) {
+            $this->command?->warn(
+                'DatabaseSeeder skipped: dev fixtures only run in the local environment. '
+                .'Use `php artisan users:create-admin` to bootstrap the first user.',
+            );
+
+            return;
+        }
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
