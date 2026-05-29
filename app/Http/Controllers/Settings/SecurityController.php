@@ -19,6 +19,16 @@ class SecurityController extends Controller
     {
         $props = [
             'passwordRules' => Password::defaults()->toPasswordRulesString(),
+            'apiTokens' => $request->user()->tokens()
+                ->latest('id')
+                ->get()
+                ->map(fn ($token) => [
+                    'id' => $token->id,
+                    'name' => $token->name,
+                    'last_used_at' => $token->last_used_at?->toIso8601String(),
+                    'created_at' => $token->created_at->toIso8601String(),
+                ]),
+            'newApiToken' => session('flash.api_token'),
         ];
 
         return Inertia::render('settings/Security', $props);
