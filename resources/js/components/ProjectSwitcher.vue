@@ -8,7 +8,7 @@ import {
     LayoutGrid,
     Plus,
 } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -92,6 +92,16 @@ const createDialogOpen = ref(false);
 
 const createForm = useForm({ name: '' });
 
+const removeNavigateListener = router.on('navigate', () => {
+    if (createDialogOpen.value) {
+        createDialogOpen.value = false;
+        createForm.reset();
+        createForm.clearErrors();
+    }
+});
+
+onUnmounted(removeNavigateListener);
+
 const openCreateDialog = () => {
     createForm.reset();
     createForm.clearErrors();
@@ -99,13 +109,7 @@ const openCreateDialog = () => {
 };
 
 const submitCreate = () => {
-    createForm.post('/projects', {
-        preserveScroll: true,
-        onSuccess: () => {
-            createDialogOpen.value = false;
-            createForm.reset();
-        },
-    });
+    createForm.post('/projects');
 };
 </script>
 
