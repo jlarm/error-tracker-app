@@ -7,7 +7,14 @@ const props = defineProps<{
     ingestUrl: string;
 }>();
 
-const installBlock = `composer require armp/error-tracker`;
+const repositoriesBlock = `"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/jlarm/error-tracker.git"
+    }
+]`;
+
+const installBlock = `composer require armp/error-tracker:^1.0`;
 
 const envBlock = computed(
     () =>
@@ -15,21 +22,6 @@ const envBlock = computed(
 );
 
 const publishBlock = `php artisan vendor:publish --tag=error-tracker-config`;
-
-const handlerBlock = `// bootstrap/app.php
-
-use Armp\\ErrorTracker\\Facades\\ErrorTracker;
-use Illuminate\\Foundation\\Configuration\\Exceptions;
-use Throwable;
-
-return Application::configure(basePath: dirname(__DIR__))
-    // ... withRouting, withMiddleware
-    ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->report(function (Throwable $e) {
-            ErrorTracker::capture($e, request());
-        });
-    })
-    ->create();`;
 
 const verifyBlock = `php artisan error-tracker:test
 
@@ -170,12 +162,35 @@ Content-Type: application/json
                 <span class="label-bracket">03_INSTALL_SDK</span>
             </h2>
             <p class="font-mono text-sm">
-                Pull the
-                <span class="text-foreground">armp/error-tracker</span> package
-                into the Laravel app you want to monitor. Laravel auto-discovers
-                its service provider and facade &mdash; no manual registration.
+                The SDK isn't on Packagist, so point Composer at the Git repo
+                first. Add this to the
+                <span class="text-foreground">repositories</span> array in the
+                <span class="text-foreground">composer.json</span> of the
+                Laravel app you want to monitor:
             </p>
+            <CodeBlock
+                :code="repositoriesBlock"
+                language="json"
+                filename="composer.json"
+            />
+            <p class="font-mono text-sm">Then pull the package in:</p>
             <CodeBlock :code="installBlock" language="bash" filename="" />
+            <p class="font-mono text-xs text-muted-foreground">
+                &gt; without the repositories entry Composer only searches
+                Packagist and fails with "could not find a matching version of
+                package armp/error-tracker". To authenticate over SSH instead,
+                swap the url for the
+                <span class="text-foreground">
+                    git@github.com:jlarm/error-tracker.git
+                </span>
+                form.
+            </p>
+            <p class="font-mono text-sm">
+                Laravel auto-discovers the service provider and facade, and the
+                provider hooks itself into the exception handler &mdash; no
+                manual registration, and nothing to add to
+                <span class="text-foreground">bootstrap/app.php</span>.
+            </p>
         </section>
 
         <section class="space-y-4">
@@ -202,25 +217,7 @@ Content-Type: application/json
             <h2
                 class="font-mono text-xs uppercase tracking-[0.32em] text-phosphor"
             >
-                <span class="label-bracket">05_WIRE_EXCEPTION_HANDLER</span>
-            </h2>
-            <p class="font-mono text-sm">
-                Add one line to
-                <span class="text-foreground">bootstrap/app.php</span> so every
-                reported throwable is forwarded.
-            </p>
-            <CodeBlock
-                :code="handlerBlock"
-                language="php"
-                filename="bootstrap/app.php"
-            />
-        </section>
-
-        <section class="space-y-4">
-            <h2
-                class="font-mono text-xs uppercase tracking-[0.32em] text-phosphor"
-            >
-                <span class="label-bracket">06_VERIFY</span>
+                <span class="label-bracket">05_VERIFY</span>
             </h2>
             <p class="font-mono text-sm">
                 Fire the bundled test command from the client app and refresh
@@ -233,7 +230,7 @@ Content-Type: application/json
             <h2
                 class="font-mono text-xs uppercase tracking-[0.32em] text-phosphor"
             >
-                <span class="label-bracket">07_API</span>
+                <span class="label-bracket">06_API</span>
             </h2>
             <p class="font-mono text-sm">
                 Beyond auto-capture, the SDK exposes a small fluent API for
